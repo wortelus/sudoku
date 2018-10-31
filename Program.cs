@@ -13,20 +13,19 @@ namespace sudoku
             Game g = new Game();
             Console.ReadLine();
         }
-
     }
 
     class Game
     {
-        const int length = 9;
-        const int difficulty = 4;
-        int[] possibleSolutionsTemplate = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        int[,] grid = new int[9,9];
-        int[,] tempGrid = new int[9, 9];
+        const int difficulty = 4; //edit this variable for defining the probability of clear values
+        int[,] grid = new int[9, 9];
+        Random r = new Random();
+        int cycles = 0;
+        int calls = 0;
 
         public Game()
         {
-            BacktrackFix(0, 0);
+            GenerateRecursive(0, 0);
             RenderGrid();
         }
 
@@ -36,7 +35,15 @@ namespace sudoku
             {
                 for (int x = 0; x < 9; x++)
                 {
-                    Console.Write("{0,-4}", " " + grid[x, y]);
+                    if (r.Next(0, difficulty) != 0)
+                    {
+                        Console.Write("{0,-4}", " " + grid[x, y]);
+                    }
+                    else
+                    {
+                        Console.Write("{0,-4}", " ");
+                    }
+
                     if ((x + 1) % 3 == 0)
                     {
                         Console.BackgroundColor = ConsoleColor.Gray;
@@ -44,7 +51,7 @@ namespace sudoku
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
                 }
-                Console.Write("\n");
+                Console.Write("\r\n");
                 if ((y + 1) % 3 == 0)
                 {
                     Console.BackgroundColor = ConsoleColor.Gray;
@@ -54,12 +61,14 @@ namespace sudoku
                     }
                     Console.BackgroundColor = ConsoleColor.Black;
                 }
-                Console.Write("\n");
+                Console.Write("\r\n");
             }
+            Console.WriteLine("For Cycles: " + cycles + "\tRecursive Calls: " + calls + "\r\nBacktrack count: " + (calls - 81));
         }
 
-        private bool BacktrackFix(int x, int y)
+        private bool GenerateRecursive(int x, int y)
         {
+            calls++;
             for (int i = 1; i <= 9; i++)
             {
                 bool block = CheckBlockValue(x / 3, y / 3, i);
@@ -73,7 +82,7 @@ namespace sudoku
                         return true;
                     }
                     Tuple<int, int> nextPosition = GetNextPosition(x, y);
-                    bool nextIteration = BacktrackFix(nextPosition.Item1, nextPosition.Item2);
+                    bool nextIteration = GenerateRecursive(nextPosition.Item1, nextPosition.Item2);
                     if (nextIteration == true)
                     {
                         return true;
@@ -82,8 +91,8 @@ namespace sudoku
                     {
                         continue;
                     }
-
                 }
+                cycles++;
             }
             grid[x, y] = 0;
             return false;
@@ -102,13 +111,13 @@ namespace sudoku
         }
 
 
-        private int[] LoadBlockValues (int x, int y)
+        private int[] LoadBlockValues(int x, int y)
         {
             int[] block = new int[9];
             int i = 0;
-            for(int a = x * 3; a < (x * 3) + 3; a++)
+            for (int a = x * 3; a < (x * 3) + 3; a++)
             {
-                for(int b = y * 3; b < (y * 3) + 3 ; b++)
+                for (int b = y * 3; b < (y * 3) + 3; b++)
                 {
                     block[i++] = grid[a, b];
                 }
@@ -119,7 +128,7 @@ namespace sudoku
         private bool CheckBlockValue(int x, int y, int value)
         {
             int[] block = LoadBlockValues(x, y);
-            if(block.Contains(value))
+            if (block.Contains(value))
             {
                 return false;
             }
@@ -132,7 +141,7 @@ namespace sudoku
         private int[] LoadRow(int y)
         {
             int[] row = new int[9];
-            for(int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++)
             {
                 row[i] = grid[i, y];
             }
@@ -142,7 +151,7 @@ namespace sudoku
         private bool CheckRow(int y, int value)
         {
             int[] row = LoadRow(y);
-            if(row.Contains(value))
+            if (row.Contains(value))
             {
                 return false;
             }
@@ -181,20 +190,6 @@ namespace sudoku
             for (int i = 0; i < input.Length; i++)
             {
                 possibleSolutions.Remove(input[i]);
-            }
-            return possibleSolutions.ToArray();
-        }
-
-        public static int[] ReturnUnusedValues(int[] inputA, int[] inputB)
-        {
-            List<int> possibleSolutions = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            for (int i = 0; i < inputA.Length; i++)
-            {
-                possibleSolutions.Remove(inputA[i]);
-            }
-            for (int i = 0; i < inputB.Length; i++)
-            {
-                possibleSolutions.Remove(inputB[i]);
             }
             return possibleSolutions.ToArray();
         }
