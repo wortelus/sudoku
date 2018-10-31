@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace sudoku
 {
@@ -10,19 +11,48 @@ namespace sudoku
     {
         static void Main(string[] args)
         {
-            int[,] grid = new int[9,9];
-
-            //experimental grid
-            grid[0, 0] = 1;
-            grid[1, 0] = 2;
-            grid[4, 4] = 5;
-            grid[6, 6] = 5;
-            grid[8, 1] = 3;
-            grid[1, 4] = 9;
-            grid[8, 8] = 6;
-            grid[0, 8] = 2;
-            Game g = new Game(grid);
+            if (args.Length == 0)
+            {
+                Game game = new Game();
+            }
+            else
+            {
+                try
+                {
+                    Game game = new Game(LoadGridFromString(File.ReadAllText(args[0])));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
             Console.ReadLine();
+        }
+
+        static int[,] LoadGridFromString(string input)
+        {
+            int[,] output = new int[9,9];
+            input.Trim();
+            string[] split = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 9)
+            {
+                throw new Exception("input file must have 9 lines");
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                if (split[i].Length < 9)
+                {
+                    throw new Exception("input file must have 9 characters in each line, check line number: " + i);
+                }
+                for (int j = 0; j < 9; j++)
+                {
+                    if (Char.IsDigit(split[i][j]))
+                    {
+                        output[j, i] = split[i][j] - '0';
+                    }
+                }
+            }
+            return output;
         }
     }
 
