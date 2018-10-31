@@ -17,7 +17,7 @@ namespace sudoku
 
     class Game
     {
-        const int difficulty = 4; //edit this variable for defining the probability of clear values
+        const int difficulty = 13; //edit this variable for defining the probability of clear values
         int[,] grid = new int[9, 9];
         Random r = new Random();
         int cycles = 0;
@@ -35,7 +35,7 @@ namespace sudoku
             {
                 for (int x = 0; x < 9; x++)
                 {
-                    if (r.Next(0, difficulty) != 0)
+                    if (r.Next(0, difficulty) == 0)
                     {
                         Console.Write("{0,-4}", " " + grid[x, y]);
                     }
