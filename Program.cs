@@ -63,6 +63,7 @@ namespace sudoku
         Random r = new Random();
         int cycles = 0;
         int calls = 0;
+        int backtracked = 0;
         List<Tuple<int, int>> gridSolveValues = new List<Tuple<int, int>>();
 
         public Game()
@@ -122,6 +123,7 @@ namespace sudoku
                 }
                 cycles++;
             }
+            backtracked++;
             grid[x, y] = 0;
             return false;
         }
@@ -160,7 +162,7 @@ namespace sudoku
                 }
                 Console.Write("\r\n");
             }
-            Console.WriteLine("For Cycles: " + cycles + "\tRecursive Calls: " + calls + "\r\nBacktrack count: " + (calls - 81));
+            Console.WriteLine("For Cycles: " + cycles + "\tRecursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
         }
 
         private bool GenerateRecursive(int x, int y)
@@ -191,6 +193,7 @@ namespace sudoku
                 }
                 cycles++;
             }
+            backtracked++;
             grid[x, y] = 0;
             return false;
         }
