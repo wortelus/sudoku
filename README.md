@@ -43,8 +43,9 @@ Output:
  1   9   6     8   4   7     2   5   3
 
  2   8   7     9   5   3     1   6   4
+
 For Cycles: 5213        Recursive Calls: 678
-Backtrack count: 597
+Backtrack Count: 628
 ```
 
 ## Future
