@@ -287,47 +287,96 @@ namespace sudoku
 
         private void RenderGrid()
         {
+            Console.Write(Environment.NewLine);
             DrawStraightLine();
             Console.Write("\r\n");
             for (int y = 0; y < 9; y++)
             {
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.Write("  ");
-                Console.BackgroundColor = ConsoleColor.Black;
-
+                DrawVerticalDivider();
                 for (int x = 0; x < 9; x++)
                 {
                     if (r.Next(0, difficulty) == 0)
                     {
-                        Console.Write("{0,-4}", " " + grid[x, y]);
+                        Console.Write("{0,-3}", " " +grid[x, y]);
                     }
                     else
                     {
-                        Console.Write("{0,-4}", " ");
+                        Console.Write("{0,-3}", " ");
                     }
 
                     if ((x + 1) % 3 == 0)
                     {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.Write("  ");
-                        Console.BackgroundColor = ConsoleColor.Black;
+                        DrawVerticalDivider();
                     }
                 }
 
+                switch (y)
+                {
+                    case 0:
+                        Console.Write("\t| For Loop Iteration Count: " + cycles);
+                        Console.SetCursorPosition(80, Console.CursorTop);
+                        Console.Write("|");
+                        break;
+                    case 1:
+                        Console.Write("\t| Total Recursive Calls: " + calls);
+                        Console.SetCursorPosition(80, Console.CursorTop);
+                        Console.Write("|");
+                        break;
+                    case 2:
+                        Console.Write("\t| Backtrack Count: " + backtracked);
+                        Console.SetCursorPosition(80, Console.CursorTop);
+                        Console.Write("|");
+                        break;
+                    case 8:
+                        Console.Write("\t| Shown Difficulty: " + difficulty);
+                        Console.SetCursorPosition(80, Console.CursorTop);
+                        Console.Write("|");
+                        break;
+
+                }
+
                 Console.Write("\r\n");
+                if ((y + 1) % 3 != 0)
+                {
+                    DrawHorizontalDivider(y);
+                    Console.Write("\r\n");
+                }
                 if ((y + 1) % 3 == 0)
                 {
                     DrawStraightLine();
+                    Console.Write("\r\n");
                 }
-                Console.Write("\r\n");
             }
-            Console.WriteLine("For Loop Iteration Count: " + cycles + "\r\nTotal Recursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
+            //Console.WriteLine("For Loop Iteration Count: " + cycles + "\r\nTotal Recursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
+        }
+
+        private void DrawVerticalDivider()
+        {
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.Write("  ");
+            Console.BackgroundColor = ConsoleColor.Black;
+
+        }
+
+        private void DrawHorizontalDivider(int y)
+        {
+            DrawVerticalDivider();
+            Console.Write("         ");
+            DrawVerticalDivider();
+            Console.Write("         ");
+            DrawVerticalDivider();
+            Console.Write("         ");
+            DrawVerticalDivider();
+            if (y < 3)
+            {
+                Console.Write("\tX---------------------------------------X");
+            }
         }
 
         private void DrawStraightLine()
         {
             Console.BackgroundColor = ConsoleColor.Gray;
-            for (int i = 0; i < 44; i++)
+            for (int i = 0; i < 35; i++)
             {
                 Console.Write(" ");
             }
