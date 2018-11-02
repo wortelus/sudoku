@@ -11,23 +11,95 @@ namespace sudoku
     {
         static void Main(string[] args)
         {
+            int[,] gridInput = null;
+            string fileOutput = string.Empty;
+            int difficulty = 0;
+
+            Console.WriteLine("Made by wortelus in 2018, licensed under MIT License... -h for help");
+            for (int i = 0; i < args.Length; i++)
+            {
+                string currentArg = args[i].Trim().ToLower(); //normalizing input argument
+
+                if (currentArg == "-f")
+                {
+                    try
+                    {
+                        gridInput = LoadGridFromString(File.ReadAllText(args[i + 1]));
+                    }
+                    catch(IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("You didn't specify the file input.");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("There was an error during loading of a file input:\r\n" + ex.Message);
+                        return;
+                    }
+                }
+                if (currentArg == "-o")
+                {
+                    try
+                    {
+                        fileOutput = args[i + 1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("You didn't specify the file output.");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("There was an error during loading of a file output:\r\n" + ex.Message);
+                        return;
+                    }
+                }
+                if (currentArg == "-d")
+                {
+                    try
+                    {
+                        difficulty = int.Parse(args[i + 1]);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("You didn't specify the difficulty, setting to 0 (all numbers visible).");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("There was an error during loading of an difficulty, setting to 0 (all numbers visible):\r\n" + ex.Message);
+                    }
+                }
+                if (currentArg == "-h")
+                {
+                    PrintHelp();
+                }
+            }
+
             if (args.Length == 0)
             {
-                Game game = new Game();
+                Console.WriteLine("No arguments specified... generating new random board, for help use -h :");
+                Game g = new Game();
+            }
+            else if (gridInput != null)
+            {
+                Game g = new Game(gridInput, fileOutput);
             }
             else
             {
-                try
-                {
-                    Game game = new Game(LoadGridFromString(File.ReadAllText(args[0])));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                Game g = new Game(difficulty, fileOutput);
             }
-            Console.ReadLine();
         }
+
+        static void PrintHelp()
+        {
+            Console.WriteLine("---------------------------------------------");
+            Console.WriteLine("-f [FILE PATH]\t\t --- specify unsolved board path to solve.");
+            Console.WriteLine("-o [FILE PATH]\t\t --- specify path to save generated output board.");
+            Console.WriteLine("-h\t\t\t --- this help screen.");
+            Console.WriteLine("-d [NUMBER]\t\t --- specify the probability (1/x) of exposing a value\r\n\t\t\t(bigger numbers = harder, less exposed numbers).");
+            Console.WriteLine("---------------------------------------------");
+        }
+
 
         static int[,] LoadGridFromString(string input)
         {
@@ -36,7 +108,7 @@ namespace sudoku
             string[] split = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 9)
             {
-                throw new Exception("input file must have 9 lines");
+                throw new Exception("input file must have 9 lines.");
             }
             for (int i = 0; i < 9; i++)
             {
@@ -58,7 +130,7 @@ namespace sudoku
 
     class Game
     {
-        int difficulty = 4; //edit this variable for defining the probability of clear values
+        int difficulty; //edit this variable for defining the probability of clear values
         int[,] grid = new int[9, 9];
         Random r = new Random();
         int cycles = 0;
@@ -66,20 +138,41 @@ namespace sudoku
         int backtracked = 0;
         List<Tuple<int, int>> gridSolveValues = new List<Tuple<int, int>>();
 
-        public Game()
+        public Game(int difficulty_ = 0, string outputPath = "")
         {
-            GenerateRecursive(0, 0);
+            difficulty = difficulty_;
+            GenerateRandomRecursive(0, 0);
             RenderGrid();
+            if (outputPath != "")
+            {
+                try
+                {
+                    File.WriteAllText(outputPath, GetSaveString());
+                    Console.WriteLine("Generated board succesfully saved to the following file: " + outputPath + "\r\n(empty spaces may have different locations).");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("There was an error during saving a solved board:\r\n" + ex.Message);
+                }
+            }
         }
 
         /// <summary>
         /// constructor for solving pre-defined sudoku boards
         /// </summary>
         /// <param name="inputGrid"></param>
-        public Game(int[,] inputGrid)
+        public Game(int[,] inputGrid, string outputPath = "")
         {
+
             difficulty = 0; //to show completed board
             grid = inputGrid;
+
+            if (IsSolvedGrid())
+            {
+                Console.WriteLine("Input board is already solved...");
+                return;
+            }
+
             for (int y = 0; y < 9; y++)
             {
                 for (int x = 0; x < 9; x++)
@@ -91,8 +184,72 @@ namespace sudoku
                     }
                 }
             }
-            SolveRecursive(gridSolveValues[0].Item1, gridSolveValues[0].Item2);
-            RenderGrid();
+            if (!SolveRecursive(gridSolveValues[0].Item1, gridSolveValues[0].Item2))
+            {
+                Console.WriteLine("Input board is unsolvable...");
+            }
+            else
+            {
+                RenderGrid();
+                if (outputPath != "")
+                {
+                    try
+                    {
+                        File.WriteAllText(outputPath, GetSaveString());
+                        Console.WriteLine("Solved board succesfully saved to the following file: " + outputPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("There was an error during saving a solved board:\r\n" + ex.Message);
+                    }
+                }
+            }
+        }
+
+        private bool IsSolvedGrid()
+        {
+            for (int a = 0; a < 9; a++)
+            {
+                for (int b = 0; b < 9; b++)
+                {
+                    if (grid[a, b] == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private string GetSaveString()
+        {
+            string output = string.Empty;
+            for (int i = 0; i < 9; i++)
+            {
+                for (int a = 0; a < 9; a++)
+                {
+                    int value = grid[a, i];
+                    if (value == 0)
+                    {
+                        return null;
+                    }
+                    if (r.Next(0, difficulty) == 0)
+                    {
+                        output += value;
+                    }
+                    else
+                    {
+                        output += "X";
+                    }
+
+                }
+
+                if (i != 8)
+                {
+                    output += "\r\n";
+                }
+            }
+            return output;
         }
 
         private bool SolveRecursive(int x, int y)
@@ -130,8 +287,14 @@ namespace sudoku
 
         private void RenderGrid()
         {
+            DrawStraightLine();
+            Console.Write("\r\n");
             for (int y = 0; y < 9; y++)
             {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.Write("  ");
+                Console.BackgroundColor = ConsoleColor.Black;
+
                 for (int x = 0; x < 9; x++)
                 {
                     if (r.Next(0, difficulty) == 0)
@@ -150,19 +313,25 @@ namespace sudoku
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
                 }
+
                 Console.Write("\r\n");
                 if ((y + 1) % 3 == 0)
                 {
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    for (int i = 0; i < 42; i++)
-                    {
-                        Console.Write(" ");
-                    }
-                    Console.BackgroundColor = ConsoleColor.Black;
+                    DrawStraightLine();
                 }
                 Console.Write("\r\n");
             }
-            Console.WriteLine("For Cycles: " + cycles + "\tRecursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
+            Console.WriteLine("For Loop Iteration Count: " + cycles + "\r\nTotal Recursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
+        }
+
+        private void DrawStraightLine()
+        {
+            Console.BackgroundColor = ConsoleColor.Gray;
+            for (int i = 0; i < 44; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.BackgroundColor = ConsoleColor.Black;
         }
 
         private bool GenerateRecursive(int x, int y)
@@ -190,6 +359,54 @@ namespace sudoku
                     {
                         continue;
                     }
+                }
+                cycles++;
+            }
+            backtracked++;
+            grid[x, y] = 0;
+            return false;
+        }
+
+        private bool GenerateRandomRecursive(int x, int y)
+        {
+            calls++;
+            int start = r.Next(1, 10);
+            int end = 9;
+            if (start != 1)
+            {
+                end = start - 1;
+            }
+
+            for (int i = start; i != end ; i++)
+            {
+                bool block = CheckBlockValue(x / 3, y / 3, i);
+                bool row = CheckRow(y, i);
+                bool column = CheckColumn(x, i);
+                if (block == true && row == true && column == true)
+                {
+                    grid[x, y] = i;
+                    if (x == 8 && y == 8)
+                    {
+                        return true;
+                    }
+                    Tuple<int, int> nextPosition = GetNextPosition(x, y);
+                    bool nextIteration = GenerateRandomRecursive(nextPosition.Item1, nextPosition.Item2);
+                    if (nextIteration == true)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (i == 9 && end != 9)
+                        {
+                            i = 0;
+                        }
+                        continue;
+                    }
+                }
+                if (i == 9 && end != 9)
+                {
+                    i = 0;
                 }
                 cycles++;
             }
@@ -297,16 +514,6 @@ namespace sudoku
             {
                 return true;
             }
-        }
-
-        private static int[] ReturnUnusedValues(int[] input)
-        {
-            List<int> possibleSolutions = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            for (int i = 0; i < input.Length; i++)
-            {
-                possibleSolutions.Remove(input[i]);
-            }
-            return possibleSolutions.ToArray();
         }
     }
 }
