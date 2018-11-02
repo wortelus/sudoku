@@ -339,13 +339,12 @@ namespace sudoku
                 if ((y + 1) % 3 != 0)
                 {
                     DrawHorizontalDivider(y);
-                    Console.Write("\r\n");
                 }
-                if ((y + 1) % 3 == 0)
+                else
                 {
                     DrawStraightLine();
-                    Console.Write("\r\n");
                 }
+                Console.Write("\r\n");
             }
             //Console.WriteLine("For Loop Iteration Count: " + cycles + "\r\nTotal Recursive Calls: " + calls + "\r\nBacktrack Count: " + backtracked);
         }
