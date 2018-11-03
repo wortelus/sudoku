@@ -314,23 +314,15 @@ namespace sudoku
                 {
                     case 0:
                         Console.Write("\t| For Loop Iteration Count: " + cycles);
-                        Console.SetCursorPosition(80, Console.CursorTop);
-                        Console.Write("|");
                         break;
                     case 1:
                         Console.Write("\t| Total Recursive Calls: " + calls);
-                        Console.SetCursorPosition(80, Console.CursorTop);
-                        Console.Write("|");
                         break;
                     case 2:
                         Console.Write("\t| Backtrack Count: " + backtracked);
-                        Console.SetCursorPosition(80, Console.CursorTop);
-                        Console.Write("|");
                         break;
                     case 8:
                         Console.Write("\t| Shown Difficulty: " + difficulty);
-                        Console.SetCursorPosition(80, Console.CursorTop);
-                        Console.Write("|");
                         break;
 
                 }
@@ -368,7 +360,7 @@ namespace sudoku
             DrawVerticalDivider();
             if (y < 3)
             {
-                Console.Write("\tX---------------------------------------X");
+                Console.Write("\tX----------------------------------X");
             }
         }
 
