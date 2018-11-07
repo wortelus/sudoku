@@ -72,6 +72,7 @@ namespace sudoku
                 if (currentArg == "-h")
                 {
                     PrintHelp();
+                    return;
                 }
             }
 
@@ -93,10 +94,14 @@ namespace sudoku
         static void PrintHelp()
         {
             Console.WriteLine("---------------------------------------------");
-            Console.WriteLine("-f [FILE PATH]\t\t --- specify unsolved board path to solve.");
-            Console.WriteLine("-o [FILE PATH]\t\t --- specify path to save generated output board.");
-            Console.WriteLine("-h\t\t\t --- this help screen.");
-            Console.WriteLine("-d [NUMBER]\t\t --- specify the probability (1/x) of exposing a value\r\n\t\t\t(bigger numbers = harder, less exposed numbers).");
+            Console.Write("{0,-24}", "-f [FILE PATH]");
+            Console.WriteLine("--- specify unsolved board path to solve.");
+            Console.Write("{0,-24}", "-o [FILE PATH]");
+            Console.WriteLine("--- specify path to save generated output board.");
+            Console.Write("{0,-24}", "-h");
+            Console.WriteLine("--- this help screen.");
+            Console.Write("{0,-24}", "-d [NUMBER]");
+            Console.WriteLine("--- specify the probability(1 / x) of exposing a value (bigger numbers = harder, less exposed numbers).");
             Console.WriteLine("---------------------------------------------");
         }
 
@@ -297,7 +302,7 @@ namespace sudoku
                 {
                     if (r.Next(0, difficulty) == 0)
                     {
-                        Console.Write("{0,-3}", " " +grid[x, y]);
+                        Console.Write("{0,-3}", " " + grid[x, y]);
                     }
                     else
                     {

@@ -1,38 +1,39 @@
 # sudoku
-Sudoku is a CLI program for generating and solving sudoku boards (formerly a high school homework)
-## Description
-A C# .NET Framework CLI application for generating and solving sudoku boards. The generation and solving steps are done recursively.
-## Use of this software
-If the program won't have any specified command line arguments, it will generate a random board.
-- -f [path]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to specify path to an unsolved board file, where each row will be on different line and unsolved values will contain non-numeric character
-- -o [path]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to specify output file of a solved/generated board
-- -d [number]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specify difficulty for generating boards (bigger numbers, more empty spaces = harder)
-- -h &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;help
+Sudoku is a simple CLI program for generating random sudoku boards and solving sudoku boards (formerly a high school homework).
 
-Example:
-sudoku.exe C:\Users\wortelus\Desktop\input.txt -f input.txt
+## Description
+A C# .NET Framework CLI application for generating and solving sudoku boards. The generation and solving steps are done recursively using backtracking approach.
+
+## Use of this software
+If the program won't have any specified command line arguments, it will generate a random board with all numbers visible.
+- -f [path] to specify path to an unsolved board file, where each row will be on different line and unsolved values will contain non-numeric character
+- -o [path] to specify output file of a solved/generated board
+- -d [number] specify randomness of generating empty spaces (bigger value, more empty spaces)
+- -h help
+
+Example: sudoku.exe -f input.txt
 
 input.txt preview
 ```
-8xxxxxxxx
-xx36xxxxx
-x7xx9x2xx
-x5xxx7xxx
-xxxx457xx
-xxx1xxx3x
-xx1xxxx68
-xx85xxx1x
-x9xxxx4xx
+8xxxxxxxx  
+xx36xxxxx  
+x7xx9x2xx  
+x5xxx7xxx  
+xxxx457xx  
+xxx1xxx3x  
+xx1xxxx68  
+xx85xxx1x  
+x9xxxx4xx  
 ```
 
 Output:
 ```
 
-   8  1  2    7  5  3    6  4  9        | For Loop Iteration Count: 396220      |
-                                        X---------------------------------------X
-   9  4  3    6  8  2    1  7  5        | Total Recursive Calls: 49558          |
-                                        X---------------------------------------X
-   6  7  5    4  9  1    2  8  3        | Backtrack Count: 49498                |
+   8  1  2    7  5  3    6  4  9        | For Loop Iteration Count: 396220      
+                                        X----------------------------------X
+   9  4  3    6  8  2    1  7  5        | Total Recursive Calls: 49558          
+                                        X----------------------------------X
+   6  7  5    4  9  1    2  8  3        | Backtrack Count: 49498                
 
    1  5  4    2  3  7    8  9  6
 
